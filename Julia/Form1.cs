@@ -40,7 +40,7 @@ namespace Julia
 
         private unsafe Bitmap GetBitmapFromAMP()
         {
-            int dataRange = 5000;
+            int dataRange = 1000;
             Bitmap bm = new Bitmap(dataRange, dataRange, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             var bmd = bm.LockBits(new Rectangle(0, 0, dataRange, dataRange),
                 System.Drawing.Imaging.ImageLockMode.ReadWrite, bm.PixelFormat);
@@ -77,7 +77,7 @@ namespace Julia
             bool isShift = (Control.ModifierKeys & Keys.Shift) != 0;
             CurrentZoom *= (1 + (isShift?0.2f:0.05f)*(e.Delta>0?-1f:1f));
             pictureBox1.Image = Zoom(OriginalBM);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
             this.Update();
 
         }

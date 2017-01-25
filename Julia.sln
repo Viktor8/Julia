@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Julia", "Julia\Julia.csproj
 		{256D3313-EC0D-4F9E-8470-01DDF7BC85A8} = {256D3313-EC0D-4F9E-8470-01DDF7BC85A8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelDll", "..\MandelDll\MandelDll\MandelDll.vcxproj", "{256D3313-EC0D-4F9E-8470-01DDF7BC85A8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelDll", "MandelDll\MandelDll\MandelDll.vcxproj", "{256D3313-EC0D-4F9E-8470-01DDF7BC85A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
