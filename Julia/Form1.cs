@@ -11,6 +11,26 @@ using System.Runtime.InteropServices;
 
 namespace Julia
 {
+    struct Area
+    {
+        public double ReMin { get; private set; }
+        public double ReSize { get; private set; }
+        public double ImMin { get; private set; }
+        public double ImSize { get; private set; }
+
+        public Area(double reMin, double reSize, double imMin, double imSize)
+        {
+            ReMin = reMin;
+            ReSize = reSize;
+            ImMin = imMin;
+            ImSize = imSize;
+        }
+        public static Area GetDefault()
+        {
+            return new Area(-1.6,3.2,-1.6,3.2);
+        }
+    }
+
     public partial class Form1 : Form
     {
         [DllImport("MandelDll.dll")]
@@ -18,7 +38,10 @@ namespace Julia
             double xMin, double xSize, double yMin, double ySize, int iterations);
 
         Bitmap OriginalBM;
-        float CurrentZoom = 1;
+        float CurrentZoom = 0.33333333333f;
+        int OriginResolution;
+        Size Resolution = Screen.PrimaryScreen.Bounds.Size;
+        Area area = Area.GetDefault();
 
         public Form1()
         {
@@ -32,27 +55,27 @@ namespace Julia
 
         private unsafe void Form1_Load(object sender, EventArgs e)
         {
-            pictureBox1.Image = GetBitmapFromAMP();//Image.FromFile((Environment.GetFolderPath(Environment.SpecialFolder.Desktop).ToString() + @"\out.png")); //GetBitmapFromAMP();
-            OriginalBM = new Bitmap(pictureBox1.Image);
-            //.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\out.png",
-            //System.Drawing.Imaging.ImageFormat.Png);
+            Size s = Screen.PrimaryScreen.Bounds.Size;
+            OriginResolution = 2 * (s.Height > s.Width ? s.Height : s.Width);
+            OriginalBM = GetBitmapFromAMP();
+            pictureBox1.Image = Zoom(OriginalBM);
+            
         }
 
         private unsafe Bitmap GetBitmapFromAMP()
         {
-            int dataRange = 1000;
-            Bitmap bm = new Bitmap(dataRange, dataRange, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            var bmd = bm.LockBits(new Rectangle(0, 0, dataRange, dataRange),
+            Bitmap bm = new Bitmap(OriginResolution, OriginResolution, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var bmd = bm.LockBits(new Rectangle(0, 0, OriginResolution, OriginResolution),
                 System.Drawing.Imaging.ImageLockMode.ReadWrite, bm.PixelFormat);
 
-            Calculate((byte*)bmd.Scan0.ToInt32(), dataRange, -2, 4, -2, 4, 1000);
+            Calculate((byte*)bmd.Scan0.ToInt32(), OriginResolution, -2, 4, -2, 4, 1000);
             bm.UnlockBits(bmd);
             return bm;
         }
         private Bitmap GetBitmapManaget()
-        {
-            Julia jul = new Julia(new Ranges(-1.50197, 1.50197, -1.50197, 1.50197),
-                new Size(2000,2000), new System.Numerics.Complex(-0.74543, 0.11301));
+        { 
+            Julia jul = new Julia(new Ranges(-1.6, 1.6, -1.6, 1.6),
+                new Size(OriginResolution, OriginResolution), new System.Numerics.Complex(-0.74543, 0.11301));
             jul.Calculate(300);
             return jul.GetBitmap();
         }

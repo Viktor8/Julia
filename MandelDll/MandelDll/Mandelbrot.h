@@ -1,6 +1,6 @@
 #pragma once
 #include <amp.h>
-#include "stdafx.h"
+
 
 
 #define TILE_SIZE       16
