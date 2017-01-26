@@ -20,6 +20,9 @@ namespace Julia
             public float ZoomKoefSpetial { get; set; } = 0.2f;
 
             public ZoomLogic()
+            {
+                    
+            }
         }
 
 
