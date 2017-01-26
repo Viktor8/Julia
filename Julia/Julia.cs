@@ -3,11 +3,17 @@ using System.Drawing;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+
 
 namespace Julia
 {
     class Julia
     {
+        [DllImport("MandelDll.dll")]
+        public extern static unsafe void Calculate(byte* scan0, int dataSize,
+    double xMin, double xSize, double yMin, double ySize, int iterations);
+
         Complex[,] area;
         short[,] iterationCount;
         double R;

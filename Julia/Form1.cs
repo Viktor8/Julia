@@ -13,9 +13,16 @@ namespace Julia
 {
     public partial class Form1 : Form
     {
-        [DllImport("MandelDll.dll")]
-        private extern static unsafe void Calculate(byte* scan0, int dataSize,
-            double xMin, double xSize, double yMin, double ySize, int iterations);
+        class ZoomLogic
+        {
+            public float CurentZoom { get; private set; } = 1;
+            public float ZoomKoef { get; set; } = 0.05f;
+            public float ZoomKoefSpetial { get; set; } = 0.2f;
+
+            public ZoomLogic()
+        }
+
+
 
         Bitmap OriginalBM;
         float CurrentZoom = 1;
@@ -45,7 +52,7 @@ namespace Julia
             var bmd = bm.LockBits(new Rectangle(0, 0, dataRange, dataRange),
                 System.Drawing.Imaging.ImageLockMode.ReadWrite, bm.PixelFormat);
 
-            Calculate((byte*)bmd.Scan0.ToInt32(), dataRange, -2, 4, -2, 4, 1000);
+            Julia.Calculate((byte*)bmd.Scan0.ToInt32(), dataRange, -2, 4, -2, 4, 1000);
             bm.UnlockBits(bmd);
             return bm;
         }
