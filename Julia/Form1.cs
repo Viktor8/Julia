@@ -36,16 +36,6 @@ namespace Julia
             //System.Drawing.Imaging.ImageFormat.Png);
         }
 
-
-
-        private Bitmap Zoom(Bitmap origin)
-        {
-            //Bitmap Result = origin.Clone(r, origin.PixelFormat);
-
-            //Graphics g = Graphics.FromImage(Result);
-            //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            return null;
-        }
         private void pictureBoxMouseWheel(object sender, MouseEventArgs e)
         {
             bool isShift = (Control.ModifierKeys & Keys.Shift) != 0;
@@ -122,47 +112,6 @@ namespace Julia
     /// </summary>
     class AreaView
     {
-        class ZoomLogic
-        {
-            public Bitmap GetDefaultView(Bitmap bm)
-            {
-                if (bm.Height != bm.Width)
-                    throw new Exception("Size of original bitmap should be a square");
-
-                if (bm.Width < ScreenSize.Width || bm.Width < ScreenSize.Height)
-                    throw new Exception("Map size should be larger than the screen size for a buffering");
-
-                int x = (bm.Width - ScreenSize.Width) / 2;
-                int y = (bm.Height - ScreenSize.Height) / 2;
-
-                Bitmap result = bm.Clone(new Rectangle(new Point(x, y), ScreenSize), bm.PixelFormat);
-
-                return result;
-            }
-
-
-
-            public event UpdateBM NeedToUpdateOriginalBitmap;
-
-            private PointD GlPos;  //CentrOfCurrArreaOnOriginalArea
-            private Area OriginArea;
-            private Size ScreenSize { get; }
-            private int VisibleRes { get; }
-            private int BmRes { get; }
-            public float BufferingFactor { get; }
-            public float SqBuffFactor { get { return BufferingFactor * BufferingFactor; } }
-
-            public ZoomLogic(Area ar)
-            {
-                OriginArea = ar;
-                GlPos = OriginArea.GetCentr();
-                ScreenSize = Screen.PrimaryScreen.Bounds.Size;
-                VisibleRes = ScreenSize.Height > ScreenSize.Width ? ScreenSize.Height : ScreenSize.Width;
-                BufferingFactor = (float)Math.Sqrt(2);
-                BmRes = (int)(VisibleRes * SqBuffFactor);
-            }
-        }
-
         public Bitmap Original { get; set; }
         private float zoomKoef;
         public float ZoomKoef
@@ -245,6 +194,22 @@ namespace Julia
 
 
             }
+            return result;
+        }
+
+        public Bitmap GetDefaultView(Bitmap bm)
+        {
+            if (bm.Height != bm.Width)
+                throw new Exception("Size of original bitmap should be a square");
+
+            if (bm.Width < ScreenSize.Width || bm.Width < ScreenSize.Height)
+                throw new Exception("Map size should be larger than the screen size for a buffering");
+
+            int x = (bm.Width - ScreenSize.Width) / 2;
+            int y = (bm.Height - ScreenSize.Height) / 2;
+
+            Bitmap result = bm.Clone(new Rectangle(new Point(x, y), ScreenSize), bm.PixelFormat);
+
             return result;
         }
 
