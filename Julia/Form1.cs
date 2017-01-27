@@ -197,21 +197,6 @@ namespace Julia
             return result;
         }
 
-        public Bitmap GetDefaultView(Bitmap bm)
-        {
-            if (bm.Height != bm.Width)
-                throw new Exception("Size of original bitmap should be a square");
-
-            if (bm.Width < ScreenSize.Width || bm.Width < ScreenSize.Height)
-                throw new Exception("Map size should be larger than the screen size for a buffering");
-
-            int x = (bm.Width - ScreenSize.Width) / 2;
-            int y = (bm.Height - ScreenSize.Height) / 2;
-
-            Bitmap result = bm.Clone(new Rectangle(new Point(x, y), ScreenSize), bm.PixelFormat);
-
-            return result;
-        }
 
         private Bitmap GetBmForArea(Area ar)
         {
