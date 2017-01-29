@@ -30,12 +30,12 @@ mandelbrot::mandelbrot(int _data_size, int _iterations, int _num_tiles)
 	iterations = _iterations;
 	num_of_tiles = _num_tiles;
 
-	//accelerator::set_default((accelerator::get_all())[0].get_device_path());
+	accelerator::set_default((accelerator::get_all())[1].get_device_path());
 }
 
 mandelbrot::~mandelbrot()
 {
-	 data.clear();
+	data.clear();
 }
 
 unsigned mandelbrot::mandelbrot_calc(int iterations, double y0, double x0) restrict(cpu, amp)

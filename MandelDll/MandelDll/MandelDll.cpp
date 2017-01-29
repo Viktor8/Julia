@@ -25,7 +25,7 @@ extern "C" __declspec(dllexport) void _stdcall Calculate(byte* scan0, int dataSi
 		*(scan0 + i * 4) = 255 * val;								//B
 		*(scan0 + i * 4 + 1) = 255 * val;							//G
 		*(scan0 + i * 4 + 2) = 255 * val;							//R
-		*(scan0 + i * 4 + 3) = 255;//255;//255;// -iterMap[i] * 255 / iterations;
+		*(scan0 + i * 4 + 3) = 255;									//A
 	}
 
 	M->~mandelbrot();
