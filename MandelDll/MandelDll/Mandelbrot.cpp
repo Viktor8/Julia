@@ -30,12 +30,24 @@ mandelbrot::mandelbrot(int _data_size, int _iterations, int _num_tiles)
 	iterations = _iterations;
 	num_of_tiles = _num_tiles;
 
-	accelerator::set_default((accelerator::get_all())[0].get_device_path());
+	//accelerator::set_default((accelerator::get_all())[1].get_device_path());
+}
+
+mandelbrot::mandelbrot(unsigned * _result, int _data_size, int _iterations, int _num_tiles)
+{
+	int size_1d = (int)sqrt(_data_size);
+
+	assert((_data_size == size_1d*size_1d), "Data size should be a square number");
+	data.resize(_data_size);
+
+	result = _result;
+	iterations = _iterations;
+	num_of_tiles = _num_tiles;
 }
 
 mandelbrot::~mandelbrot()
 {
-	 data.clear();
+	data.clear();
 }
 
 unsigned mandelbrot::mandelbrot_calc(int iterations, double y0, double x0) restrict(cpu, amp)
@@ -51,10 +63,17 @@ unsigned mandelbrot::mandelbrot_calc(int iterations, double y0, double x0) restr
 		xt = x;
 		x = x * x - y*y - 0.74543;
 		y = 2 * xt * y + 0.11301;
-
 		iteration++;
 	}
-	return (unsigned)iteration;
+	unsigned t = iteration * 255 / iterations;;
+	unsigned result = 255;
+	result <<= 8;
+	result |= t;
+	result <<= 8;
+	result |= t;
+	result <<= 8;
+	result |= t;
+	return (unsigned)result;
 }
 
 void mandelbrot::execute(double xMin, double xSize, double yMin, double ySize, double _cRe, double _cIm)
@@ -111,12 +130,13 @@ void mandelbrot::execute(double xMin, double xSize, double yMin, double ySize, d
 		}
 	});
 
-	copy(a_data, data.begin());
+	copy(a_data, result);
+	//copy(a_data, data.begin());
 }
 
-unsigned int * mandelbrot::getResult()
+std::vector<unsigned> mandelbrot::getResult()
 {
-	return &data[0];
+	return data;
 }
 
 

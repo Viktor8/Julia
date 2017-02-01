@@ -14,8 +14,9 @@ class mandelbrot
 {
 public:
 	mandelbrot(int _data_size, int _iterations, int _num_tiles);
+	mandelbrot(unsigned* _result,int _data_size, int _iterations, int _num_tiles);
 	void execute(double xMin, double xSize, double yMin, double ySize, double cRe , double cIm);
-	unsigned int* getResult();
+	std::vector<unsigned> getResult();
 	~mandelbrot();
 
 
@@ -23,6 +24,7 @@ private:
 	static unsigned mandelbrot_calc(int iterations, double y0, double x0) restrict(cpu, amp);
 
 	std::vector<unsigned> data;
+	unsigned* result;
 	unsigned iterations;
 	unsigned num_of_tiles;
 	float cIm;

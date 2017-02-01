@@ -11,37 +11,10 @@ using System.Runtime.InteropServices;
 
 namespace Julia
 {
-    struct Area
-    {
-        public double ReMin { get; private set; }
-        public double ReSize { get; private set; }
-        public double ImMin { get; private set; }
-        public double ImSize { get; private set; }
-
-        public Area(double reMin, double reSize, double imMin, double imSize)
-        {
-            ReMin = reMin;
-            ReSize = reSize;
-            ImMin = imMin;
-            ImSize = imSize;
-        }
-        public static Area GetDefault()
-        {
-            return new Area(-1.6,3.2,-1.6,3.2);
-        }
-    }
-
     public partial class Form1 : Form
     {
-        [DllImport("MandelDll.dll")]
-        private extern static unsafe void Calculate(byte* scan0, int dataSize,
-            double xMin, double xSize, double yMin, double ySize, int iterations);
 
-        Bitmap OriginalBM;
-        float CurrentZoom = 0.33333333333f;
-        int OriginResolution;
-        Size Resolution = Screen.PrimaryScreen.Bounds.Size;
-        Area area = Area.GetDefault();
+        AreaView areaView;
 
         public Form1()
         {
@@ -55,57 +28,36 @@ namespace Julia
 
         private unsafe void Form1_Load(object sender, EventArgs e)
         {
-            Size s = Screen.PrimaryScreen.Bounds.Size;
-            OriginResolution = 2 * (s.Height > s.Width ? s.Height : s.Width);
-            OriginalBM = GetBitmapFromAMP();
-            pictureBox1.Image = Zoom(OriginalBM);
-            
-        }
 
-        private unsafe Bitmap GetBitmapFromAMP()
-        {
-            Bitmap bm = new Bitmap(OriginResolution, OriginResolution, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            var bmd = bm.LockBits(new Rectangle(0, 0, OriginResolution, OriginResolution),
+            // areaView = new AreaView(Area.GetDefault(),1000);
+            //areaView.PBsize = pictureBox1.Size;
+            int dataRange = (int)(Screen.PrimaryScreen.Bounds.Size.Width * Math.Sqrt(2));
+            Bitmap bm = new Bitmap(dataRange, dataRange, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+      
+            var bmd = bm.LockBits(new Rectangle(0, 0, dataRange, dataRange),
                 System.Drawing.Imaging.ImageLockMode.ReadWrite, bm.PixelFormat);
 
-            Calculate((byte*)bmd.Scan0.ToInt32(), OriginResolution, -2, 4, -2, 4, 1000);
+            Area ar = Area.GetDefault();
+            Julia.Calculate((byte*)bmd.Scan0.ToInt32(), dataRange, ar.ReMin, ar.ReSize, ar.ImMin, ar.ImSize, 1000);
             bm.UnlockBits(bmd);
-            return bm;
-        }
-        private Bitmap GetBitmapManaget()
-        { 
-            Julia jul = new Julia(new Ranges(-1.6, 1.6, -1.6, 1.6),
-                new Size(OriginResolution, OriginResolution), new System.Numerics.Complex(-0.74543, 0.11301));
-            jul.Calculate(300);
-            return jul.GetBitmap();
+            bm.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\out.png",
+            System.Drawing.Imaging.ImageFormat.Png);
         }
 
-        private Bitmap Zoom(Bitmap origin)
-        {
-            Size t = OriginalBM.Size;
-            Rectangle r = new Rectangle((int)(t.Width*(1-CurrentZoom)/2),
-                (int)(t.Height * (1 - CurrentZoom) / 2), 
-                (int)(t.Width * CurrentZoom),
-                (int)(t.Height * CurrentZoom));
-            
-        
-            Bitmap Result = origin.Clone(r,origin.PixelFormat);
-           
-            //Graphics g = Graphics.FromImage(Result);
-            //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            return Result;
-        }
         private void pictureBoxMouseWheel(object sender, MouseEventArgs e)
         {
             bool isShift = (Control.ModifierKeys & Keys.Shift) != 0;
-            CurrentZoom *= (1 + (isShift?0.2f:0.05f)*(e.Delta>0?-1f:1f));
-            pictureBox1.Image = Zoom(OriginalBM);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
+            areaView.ZoomKoef = (isShift ? 1.15f : 1.05f);
+
+            PointF p = new PointF((float)e.X / pictureBox1.Width, (float)e.Y / pictureBox1.Height);
+
+            pictureBox1.Image = areaView.Zoom(p, e.Delta > 0 ? Zooming.ZoomIn : Zooming.ZoomOut);
+
+      
+
+            //pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
             this.Update();
 
         }
-
-
-    }
+    }   
 }
- 
