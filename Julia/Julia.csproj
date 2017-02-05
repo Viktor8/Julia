@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="HSV_RGB_Color.cs" />
     <Compile Include="Julia.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

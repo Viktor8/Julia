@@ -11,7 +11,7 @@ namespace Julia
     class Julia
     {
         [DllImport("MandelDll.dll")]
-        public extern static unsafe void Calculate(byte* scan0, int dataSize,
+        public extern static unsafe void Calculate(int* scan0, int dataSize,
     double xMin, double xSize, double yMin, double ySize, int iterations);
 
         Complex[,] area;

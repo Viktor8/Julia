@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
+
 namespace Julia
 {
     struct Area
@@ -125,6 +126,8 @@ namespace Julia
 
         public Bitmap Zoom(PointF mousePosition,Zooming direction)
         {
+            Logger.Log("zoom " + direction.ToString());
+
             if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > 1.0 || mousePosition.Y > 1.0)
                 throw new ArgumentOutOfRangeException("Mouse position should be 0<x,y<1");
             Area t;
@@ -151,9 +154,13 @@ namespace Julia
             if (ar.ReSize / OriginArea.ReSize < 1 / BufferingFactor ||
                 ar.ReSize / OriginArea.ReSize > BufferingFactor ||
                 ar.ImSize / OriginArea.ImSize < 1 / BufferingFactor ||
-                ar.ImSize / OriginArea.ImSize > BufferingFactor||
+                ar.ImSize / OriginArea.ImSize > BufferingFactor ||
                 !ar.IsIncludeToSet(OriginArea))
+            {
                 Original = GenerateBitmapForArea(ar);
+                OriginArea = ar;
+                Logger.Log("RECALC");
+            }
 
 
             int x = (int)(Original.Width * ((ar.ReMin - OriginArea.ReMin) / OriginArea.ReSize));
@@ -209,16 +216,17 @@ namespace Julia
             
             Original = GenerateBitmapForArea(OriginArea);
         }
-        public unsafe Bitmap GenerateBitmapForArea(Area ar)
+        private unsafe Bitmap GenerateBitmapForArea(Area ar)
         {
             Bitmap bm;
+
             if (Original == null)
                 Original = bm = new Bitmap(dataRange, dataRange, PixelFormat.Format32bppArgb);
             var bmd = Original.LockBits(new Rectangle(0, 0, dataRange, dataRange),
-                System.Drawing.Imaging.ImageLockMode.ReadWrite, Original.PixelFormat);
+                ImageLockMode.ReadWrite, Original.PixelFormat);
 
             ar = ar.ToSqArea();
-            Julia.Calculate((byte*)bmd.Scan0.ToInt32(), dataRange, ar.ReMin, ar.ReSize, ar.ImMin, ar.ImSize, iter);
+            Julia.Calculate((int*)bmd.Scan0.ToInt32(), dataRange, ar.ReMin, ar.ReSize, ar.ImMin, ar.ImSize, iter);
             Original.UnlockBits(bmd);
             return Original;
         }

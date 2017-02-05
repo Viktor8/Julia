@@ -34,9 +34,9 @@ namespace Julia
             //}
             //int t = (int)sw.ElapsedMilliseconds;
 
-            int[] arr = new int[10];
-        
-         
+
+
+
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
